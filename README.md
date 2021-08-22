@@ -11,8 +11,8 @@ flutter pub get
 ```
 
 ## Features (Implemented)
--[x] App Search and launch with animations.
--[x] Set as default launcher.
+- [x] App Search and launch with animations.
+- [x] Set as default launcher.
 
 ## 📸 Screenshots
 ![1](images/1.png)
