@@ -1,3 +1,4 @@
+import 'package:r_launcher/models/settings.model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedService {
@@ -23,5 +24,18 @@ class SharedService {
   static Future<int> getIndexCurrentTab() async {
     var prefs = await SharedPreferences.getInstance();
     return prefs.getInt("currentTab") ?? 0;
+  }
+
+  /// Settings
+  static Future<void> setSettingsJSON(Settings settings) async {
+    String stringedSettings = settingsToJson(settings);
+    var prefs = await SharedPreferences.getInstance();
+    return prefs.setString("settings", stringedSettings);
+  }
+
+  /// Get settings
+  static Future<Settings> getSettings() async {
+    var prefs = await SharedPreferences.getInstance();
+    return settingsFromJson(prefs.getString("settings"));
   }
 }

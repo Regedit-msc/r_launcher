@@ -6,7 +6,7 @@ import 'package:r_launcher/utils/defaullt.utils.dart';
 
 class AppsProvider extends ChangeNotifier {
   List<Application> apps;
-
+  String searchAppString = '';
   bool searching = false;
   StreamController<List<Application>> streamC = StreamController.broadcast();
   void setSearching(bool isSearching) {
@@ -14,8 +14,13 @@ class AppsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setSearchString(String searchString) {
+    searchAppString = searchString;
+    notifyListeners();
+  }
+
   void search(String searchText) async {
-    if (searchText == "") {
+    if (searchText.trim().length == 0) {
       streamC.sink.add([]);
     } else {
       List<Application> filteredAppList = apps

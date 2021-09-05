@@ -6,9 +6,9 @@ class CustomPageRoute extends PageRouteBuilder {
   CustomPageRoute({
     @required this.child,
   }) : super(
-            reverseTransitionDuration: Duration(milliseconds: 1000),
-            transitionDuration: Duration(milliseconds: 1000),
-            pageBuilder: (context, animation, secondaryAnimation) => child) {}
+            reverseTransitionDuration: Duration(milliseconds: 500),
+            transitionDuration: Duration(milliseconds: 500),
+            pageBuilder: (context, animation, secondaryAnimation) => child);
 
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation,

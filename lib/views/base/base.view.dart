@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:r_launcher/main.dart';
+import 'package:r_launcher/models/settings.model.dart';
 import 'package:r_launcher/providers/providers.dart';
 import 'package:r_launcher/services/shared.service.dart';
 import 'package:r_launcher/utils/defaullt.utils.dart';
@@ -19,6 +20,7 @@ class _BaseViewState extends State<BaseView>
   @override
   void initState() {
     _getPageToShow();
+    _init();
     super.initState();
   }
 
@@ -28,19 +30,25 @@ class _BaseViewState extends State<BaseView>
     super.dispose();
   }
 
+  void _init() async {
+    Settings settings = await SharedService.getSettings();
+    navigatorKey.currentContext
+        .read(Providers.settingsProvider)
+        .setInit(settings);
+  }
+
   void _getPageToShow() async {
     List<Widget> tabs =
         navigatorKey.currentContext.read(Providers.baseProvider).defaultTabs;
     int noOfTabsToCreate = await SharedService.getNoOfTabs();
+
     if (noOfTabsToCreate == 2) {
-      int initTabIndex = await SharedService.getIndexCurrentTab();
+      // int initTabIndex = await SharedService.getIndexCurrentTab();
       Constants.initialTabs.forEach((element) {
         tabs.add(element);
       });
-      navigatorKey.currentContext
-          .read(Providers.baseProvider)
-          .setTabIndex(initTabIndex);
-      _pageController = PageController(initialPage: initTabIndex);
+      navigatorKey.currentContext.read(Providers.baseProvider).setTabIndex(0);
+      _pageController = PageController(initialPage: 0);
 
       return;
     }
@@ -48,15 +56,19 @@ class _BaseViewState extends State<BaseView>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return WillPopScope(
       onWillPop: () => Future.value(false),
       child: Scaffold(
         body: Container(
           child: Consumer(builder: (context, watch, child) {
             final baseProvider = watch(Providers.baseProvider);
+            final settingsProvider = watch(Providers.settingsProvider);
             return PageView.builder(
               physics: ClampingScrollPhysics(),
-              scrollDirection: Axis.horizontal,
+              scrollDirection: settingsProvider.swipeHome == "false"
+                  ? Axis.horizontal
+                  : Axis.vertical,
               controller: _pageController,
               onPageChanged: (index) {
                 baseProvider.setTabIndex(index);
@@ -73,6 +85,5 @@ class _BaseViewState extends State<BaseView>
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }

@@ -1,3 +1,4 @@
+import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +22,7 @@ class _HomeViewState extends State<HomeView>
   @override
   void initState() {
     checkAndSetDefault();
+    _getDeviceApps();
     super.initState();
   }
 
@@ -61,8 +63,20 @@ class _HomeViewState extends State<HomeView>
     }
   }
 
+  void _getDeviceApps() async {
+    List<Application> apps = await DeviceApps.getInstalledApplications(
+        onlyAppsWithLaunchIntent: true,
+        includeSystemApps: true,
+        includeAppIcons: true);
+    List<Application> currentAppList =
+        navigatorKey.currentContext.read(Providers.appProvider).apps;
+    if (currentAppList != null) return;
+    navigatorKey.currentContext.read(Providers.appProvider).setAppsList(apps);
+  }
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: Stack(alignment: Alignment.center, children: [
@@ -71,7 +85,7 @@ class _HomeViewState extends State<HomeView>
           return homeProvider.wallPaperImageBytes != null
               ? TweenAnimationBuilder(
                   curve: Curves.easeIn,
-                  duration: Duration(seconds: 2),
+                  duration: Duration(seconds: 1),
                   tween: Tween<double>(begin: 0, end: 1.0),
                   builder: (context, double _val, Widget child) {
                     return Opacity(
@@ -134,6 +148,5 @@ class _HomeViewState extends State<HomeView>
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }
