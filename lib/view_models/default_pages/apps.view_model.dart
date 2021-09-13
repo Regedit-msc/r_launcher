@@ -52,6 +52,7 @@ class AppsProvider extends ChangeNotifier {
     const EventChannel _stream = Constants.APP_EVENTS;
     _stream.receiveBroadcastStream().listen(
       (data) async {
+        print(data);
         if (data.split("/")[0] == "removed") {
           apps.removeWhere((app) => app.appName == data.split("/")[1]);
           print(data);

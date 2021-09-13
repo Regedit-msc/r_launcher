@@ -19,14 +19,13 @@ class AppsChangeBroadcastReceiver : BroadcastReceiver() {
         val packageName: String = intent?.data.toString()
             Log.i("appchange", packageName)
             when(intent?.action){
-                                Intent.ACTION_PACKAGE_ADDED->{
-                                  callback.onAppChange("added",packageName)
-                                }
-                                Intent.ACTION_PACKAGE_REMOVED->{
-                                callback.onAppChange("removed",packageName)
-                                }
-
-                            }
+                Intent.ACTION_PACKAGE_ADDED->{
+                    callback.onAppChange("added",packageName)
+                }
+                Intent.ACTION_PACKAGE_REMOVED->{
+                    callback.onAppChange("removed",packageName)
+                }
+            }
 
     }
 }

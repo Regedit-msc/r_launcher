@@ -33,10 +33,6 @@ class MainActivity: FlutterActivity() {
                 object: EventChannel.StreamHandler {
                     val receiver = AppsChangeBroadcastReceiver()
                     override fun onListen(arguments: Any?, eventSink: EventChannel.EventSink) {
-                        val filter = IntentFilter()
-                        filter.addAction(Intent.ACTION_PACKAGE_ADDED)
-                        filter.addAction(Intent.ACTION_PACKAGE_REMOVED)
-
                         receiver.setListener(object : AppsChangeListener() {
                             override fun onAppChange(info: String, packageName: String) {
                                 Log.i("appchange", "App was $info. $packageName")
@@ -45,9 +41,12 @@ class MainActivity: FlutterActivity() {
 
                         })
                         try {
+                            val filter = IntentFilter()
+                            filter.addAction(Intent.ACTION_PACKAGE_ADDED)
+                            filter.addAction(Intent.ACTION_PACKAGE_REMOVED)
                             context.registerReceiver(receiver, filter)
                         } catch (e: Error){
-
+                            Log.e("Intent ", "IE")
                         }
                     }
 
