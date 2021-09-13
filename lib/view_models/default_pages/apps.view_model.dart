@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:r_launcher/utils/defaullt.utils.dart';
 
 class AppsProvider extends ChangeNotifier {
@@ -45,5 +46,26 @@ class AppsProvider extends ChangeNotifier {
   Future<void> startApp(String packageName, String animationType) async {
     await Constants.PLATFORM.invokeMethod(Constants.APPS_METHOD,
         {"name": packageName, "animationType": animationType});
+  }
+
+  void handleAppInstallOrUninstall() {
+    const EventChannel _stream = Constants.APP_EVENTS;
+    _stream.receiveBroadcastStream().listen(
+      (data) async {
+        if (data.split("/")[0] == "removed") {
+          apps.removeWhere((app) => app.appName == data.split("/")[1]);
+          print(data);
+          notifyListeners();
+        } else {
+          List<Application> appsGotten =
+              await DeviceApps.getInstalledApplications(
+                  onlyAppsWithLaunchIntent: true,
+                  includeSystemApps: true,
+                  includeAppIcons: true);
+          apps = appsGotten;
+          notifyListeners();
+        }
+      },
+    );
   }
 }

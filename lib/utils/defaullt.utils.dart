@@ -9,6 +9,7 @@ import '../main.dart';
 
 class Constants {
   static const PLATFORM = MethodChannel("com.mdot.r_launcher/channels");
+  static const APP_EVENTS = EventChannel("com.mdot.r_launcher/events/apps");
   static const String WALLPAPER_METHOD = "wallpaper";
   static const String APPS_METHOD = "apps";
   static const String PERMISSION = "permission";

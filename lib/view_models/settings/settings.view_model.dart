@@ -97,10 +97,6 @@ class SettingsProvider extends ChangeNotifier {
     streamC.close();
   }
 
-  void dispose() {
-    settingsScrollController.dispose();
-  }
-
   void setInit(Settings settings) {
     swipeHome = settings.swipeHome;
     gridCount = settings.gridCount;

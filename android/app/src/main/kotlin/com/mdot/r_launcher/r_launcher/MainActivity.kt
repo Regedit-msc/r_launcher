@@ -1,5 +1,7 @@
 package com.mdot.r_launcher.r_launcher
 
+import AppsChangeBroadcastReceiver
+import AppsChangeListener
 import android.app.WallpaperManager
 import android.content.*
 import android.content.pm.PackageManager
@@ -13,7 +15,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.util.Log
 import android.widget.Toast
-
+import io.flutter.plugin.common.EventChannel
 import java.io.ByteArrayOutputStream
 import kotlinx.coroutines.*
 import spencerstudios.com.bungeelib.Bungee
@@ -22,8 +24,43 @@ import spencerstudios.com.bungeelib.Bungee
 class MainActivity: FlutterActivity() {
     private val scope = CoroutineScope(Job() + Dispatchers.Main)
     private val PLATFORM_CHANNEL: String = "com.mdot.r_launcher/channels"
+    private val APP_EVENTS: String = "com.mdot.r_launcher/events/apps"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val eventChannel = EventChannel(flutterEngine?.dartExecutor?.binaryMessenger,APP_EVENTS)
+        eventChannel.setStreamHandler(
+                object: EventChannel.StreamHandler {
+                    val receiver = AppsChangeBroadcastReceiver()
+                    override fun onListen(arguments: Any?, eventSink: EventChannel.EventSink) {
+                        val filter = IntentFilter()
+                        filter.addAction(Intent.ACTION_PACKAGE_ADDED)
+                        filter.addAction(Intent.ACTION_PACKAGE_REMOVED)
+
+                        receiver.setListener(object : AppsChangeListener() {
+                            override fun onAppChange(info: String, packageName: String) {
+                                Log.i("appchange", "App was $info. $packageName")
+                                eventSink.success("$info/$packageName")
+                            }
+
+                        })
+                        try {
+                            context.registerReceiver(receiver, filter)
+                        } catch (e: Error){
+
+                        }
+                    }
+
+                    override fun onCancel(arguments: Any?) {
+                      Log.i("Cancelled", "The op was cancelled.")
+                       try{
+                           context.unregisterReceiver(receiver)
+                       } catch (e: Error){
+                           Log.i("ErrorSt", "Some error")
+                       }
+                    }
+                }
+        )
         MethodChannel(flutterEngine?.dartExecutor?.binaryMessenger, PLATFORM_CHANNEL).setMethodCallHandler { call, result ->
             when (call.method) {
                 "checkPermission"-> {

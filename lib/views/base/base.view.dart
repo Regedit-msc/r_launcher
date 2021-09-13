@@ -35,6 +35,9 @@ class _BaseViewState extends State<BaseView>
     navigatorKey.currentContext
         .read(Providers.settingsProvider)
         .setInit(settings);
+    navigatorKey.currentContext
+        .read(Providers.appProvider)
+        .handleAppInstallOrUninstall();
   }
 
   void _getPageToShow() async {
